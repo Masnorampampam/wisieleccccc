@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wisielec</title>
+    <link href="..//wisielec tego typu/kolory.css" rel="stylesheet" style="type/css">
+</head>
+
+<body onload="init()">
+    <div id="container">
+        <div class="row text-center m-5" id="header">
+            <h1>Wisielec</h1>
+        </div>
+        <div class="row m-5" id="main">
+            <div class="col-6 text-center" id="image">
+                <img class="img-fluid" src="wisielec1.png" id="hangmanPic"><br>
+                <span id="attemptCounter">Próby</span>
+            </div>
+            <div class="col-6 text-center pt-5" id="password" style="letter-spacing: 1rem;">
+                __________
+            </div>
+        </div>
+        <div class="row m-5">
+            <div class="col text-center" id="keyboard">
+                
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var password;
+        var passwordMask = Array();
+        var attempts;
+        var maxAttempts = 6;
+        function init() {
+            for (let code = 65; code < 91; code++) {
+
+                let char = String.fromCharCode(code);
+                let button = document.createElement('button');
+                button.innerHTML = char;
+                button.classList.add('btn');
+                button.classList.add('btn-primary');
+                button.classList.add('m-1');
+                button.addEventListener("click", guess);
+                document.getElementById('keyboard').appendChild(button);
+            }
+            password = prompt("Podaj hasło:");
+            password = password.toUpperCase();
+            passwordMask = new Array(password.length);
+            passwordMask.fill(true);
+            document.getElementById('password').innerHTML = getMaskedPassword();
+            attempts = 0;
+            document.getElementById('attemptCounter').innerHTML = "Próby: " + attempts + "/" + maxAttempts;
+            document.getElementById('hangmanPic').src = attempts + ".png";
+        }
+
+        function guess(event) {
+            let success = false;
+            let char = event.srcElement.innerHTML;
+            let passwordArray = password.split("");
+            for(let i = 0; i < passwordArray.length; i++) {
+                if(passwordArray[i] == char) {
+                    passwordMask[i] = false;
+                    success = true;
+                }
+            }
+            document.getElementById('password').innerHTML = getMaskedPassword();
+            event.srcElement.disabled = true;
+            if(!success) {
+                attempts++; 
+                document.getElementById('attemptCounter').innerHTML = "Próby: " + attempts + "/" + maxAttempts;
+                document.getElementById('hangmanPic').src = attempts + ".png";
+            }
+            if(checkLose()) {
+                alert("Przegrałeś!");
+            }
+            if(checkWin()) {
+                alert("Wygrałeś!");
+            }
+        }
+        function checkLose() {
+            if(attempts >= maxAttempts) {
+                return true; 
+            }
+            else return false; 
+        }
+        function checkWin() {
+            for (let i = 0; i < passwordMask.length; i++) {
+                if(passwordMask[i] == true) 
+                    return false; 
+            }
+            return true; 
+        }
+        function getMaskedPassword() {
+            let passwordArray = password.split("");
+            let maskedPassword = Array();
+            for(let i = 0; i < passwordArray.length; i++) {
+                if(passwordMask[i])
+                    maskedPassword.push("_");
+                else
+                    maskedPassword.push(passwordArray[i]);
+            }
+            let maskedPasswordString = maskedPassword.join("");
+            return maskedPasswordString;
+        }
+
+    </script>
+</body>
+
+</html>
